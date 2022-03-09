@@ -3,7 +3,7 @@ project(ReadWrite_INI)
 
 set(CMAKE_CXX_STANDARD 11)
 
-set(SOURCE_FILES main.cpp INI.cpp INI.h NegozioCD.ini)
+set(SOURCE_FILES main.cpp INI.cpp INI.h ListinoCD.ini)
 add_executable(ReadWrite_INI ${SOURCE_FILES})
 
 add_subdirectory(test)

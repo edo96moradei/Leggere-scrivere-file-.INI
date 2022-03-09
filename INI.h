@@ -13,40 +13,40 @@ using namespace std;
 
 class INI{
 public:
-    INI(string fileName, int nComment);
-    virtual ~INI();
-    void checkIsOpen() throw(std::runtime_error);
+    INI(const string &fileName);
+
+    int errors = 0;
+    int no_errors = 1;
+    int exist = 2;
+    int state;
 
     const string &getFileName() const;
-    void setFileName(const string &fileName);
 
-    int addSection(string section);
-    int addParam(string section, string parameter, string value);
-    int addComment(string section, string parameter, string comment);
+    int addSection(const string &section);
+    int addParam(const string &section, const string &parameter, const string &value);
+    int addComment(const string &section,const string &parameter, const string &comment);
+    int addComment(const string &section, const string &comment);
 
-    int deleteSection(string section);
-    int deleteParam(string section, string parameter);
-    int deleteComment(string section, string parameter);
+    int deleteSection(const string &section);
+    int deleteParam(const string &section, const string &parameter);
 
-    int renameSection(string section, string newSection);
-    int renameParam(string section, string newParameter, string parameter);
-    int changeParam(string section, string value, string parameter);
+    int renameSection(const string &section, const string &newSection);
+    int renameParam(const string &section, const string &newParameter, const string &parameter);
+    int changeParam(const string &section, const string &value, const string &parameter);
 
-    void print();
+    void printSections();
+    void printParameters(const string &section);
+    void printValue(const string &section, const string &parameter);
+    void printAll();
+
     void reset();
 
-    void end();
-
+    virtual ~INI();
 private:
     string fileName;
     map<string, map<string,string>> fileINI;
     fstream project;
-    int nComment;
-
-    static int errors = 0;
-    static int no_errors = 1;
-    static int exist = 2;
-    int state;
+    void analyze();
 };
 
 
