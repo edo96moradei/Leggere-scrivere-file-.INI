@@ -12,7 +12,7 @@
 //         int exist = 2;
 
 TEST(testINI, testSection){
-    INI fileINI("ListinoCD");
+    INI fileINI("ListinoCD.ini");
 
     //test addSection
     EXPECT_EQ(fileINI.addSection("POP"), fileINI.state = 1);
@@ -29,7 +29,7 @@ TEST(testINI, testSection){
 }
 
 TEST(testINI, testParam){
-    INI fileINI("ListinoCD");
+    INI fileINI("ListinoCD.ini");
 
     //test addParam
     EXPECT_EQ(fileINI.addParam("ROCK", "GUNS'N'ROSES", "5"), fileINI.state = 1);
@@ -52,7 +52,7 @@ TEST(testINI, testParam){
 }
 
 TEST(testINI, testComment){
-    INI fileINI("ListinoCD");
+    INI fileINI("ListinoCD.ini");
 
     //test addComment
     EXPECT_EQ(fileINI.addComment("ROCK", "PINK FLOYD", "Nuovo CD arrivato oggi"), fileINI.state = 1);
