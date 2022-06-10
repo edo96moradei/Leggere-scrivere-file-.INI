@@ -5,47 +5,41 @@
 #include <iostream>
 #include "INI.h"
 
-INI::INI(const string &fileName) {
-    this->fileName = fileName;
-    this->project.open(fileName, ios::in);
-    if(project.is_open()){
-        analyze();
-    }
-    project.close();
-}
-
-void INI::analyze(){
-    string thisSection;
-    string thisComment;
-    string line; //l'analisi del file è fatta riga per riga
-
-    while(!project.eof()){ // leggo dallo stream di input una sequenza di caratteri copiandoli nella stringa
-        getline(project, line);
-        if(line[0] == '['){ //inizio sezione
-            thisSection = line;
-            thisSection.pop_back();
-            thisSection.erase(thisSection.begin());
-            addSection(thisSection);
-        }else{
-            cout << "Errore: ']' non trovato nella sezione." << endl; // ']' non trovato
-            fileINI.clear();
-            return;
-        }if(!line.empty() && line[0] == ';'){ //ha trovato un commento
-            thisComment = line;
-            thisComment.erase(thisComment.begin());
-        }else if(line.empty()){
-            //nulla è memorizzato se la stringa è vuota...
-        }else{ //trovato parametro
-            for(auto position = line.find(" "); position!=string::npos ; position = line.find(" "))   //Elimino eventuali spazi vuoti
-                line.erase(position,1);
-            auto itr = line.find('=');
-            string parametro(line, 0, itr);
-            string valore(line, itr+1, string::npos);
-            if(line.length()>0){
-                addParam(thisSection, valore, parametro);
+INI::INI(const string &fn){
+    fileName = fn;
+    string section;
+    string comment;
+    char lineChar[1000];
+    project.open(fileName, ios::in); //operazione di lettura da un flusso
+    if(project.is_open()) {
+        string stringa(lineChar);
+        for(auto position = stringa.find(" "); position!=string::npos ; position = stringa.find(" ")){
+            stringa.erase(position, 1); //elimino spazi vuoti (interpretati come fine stringa)
+        }
+        while (!project.eof()) { //eof: end-of-file
+            project.getline(lineChar, 1000);
+            switch (lineChar[0]) {
+                case '[': {
+                    section = lineChar;
+                    addSection(section);
+                    break;
+                }
+                case ';': {
+                    comment = lineChar;
+                    break;
+                }
+                default: { //non ho nè un commento nè una sezione -> leggo un paramentro
+                    auto position = stringa.find('=');
+                    string parametro(stringa, 0, position); //costruttore stringa da 0 a '='
+                    string valore(stringa, position + 1, string::npos); //costruttore stringa da '=' a fine stinga
+                    if (stringa.length() > 0)
+                        addParam(parametro, valore, section);
+                    break;
+                }
             }
         }
     }
+    project.close();
 }
 
 INI::~INI() {
@@ -54,7 +48,6 @@ INI::~INI() {
 const string &INI::getFileName() const {
     return fileName;
 }
-
 
 int INI::addSection(const string &section) {
     auto itr = fileINI.find(section); //l'iteratore va all'elemento section
@@ -70,15 +63,15 @@ int INI::addSection(const string &section) {
 
 int INI::addParam(const string &section, const string &parameter, const string &value) {
     try {
-        auto itr = fileINI[section].insert(make_pair(parameter, value)); //accedo alla sezione e inserisco la coppia ( , )
+        auto itr = fileINI.at(section).insert(make_pair(parameter, value)); //accedo alla sezione e inserisco la coppia ( , )
         cout<<"Alla sezione "<<"["<<section<<"]"<<" aggiunto ("<<parameter<<","<<value<<")"<<endl;
         if(itr.second){
             state = no_errors;
         }else{
             state = exist;
         }
-    }catch(out_of_range e){
-        std::cout<<"Tentativo di accedere ad elementi fuori range"<<std::endl;
+    }catch(out_of_range& e){
+        //std::cout<<"Tentativo di accedere ad elementi fuori range"<<std::endl;
         state = errors;
     }
     return state;
@@ -87,15 +80,15 @@ int INI::addParam(const string &section, const string &parameter, const string &
 int INI::addComment(const string &section, const string &parameter, const string &comment) {
     try {
         state = errors;
-        auto position = fileINI[section].find(parameter);
-        if(position != fileINI[section].end()){
-            state = addParam(section, parameter+ "$", "" +comment);
+        auto position = fileINI.at(section).find(parameter);
+        if(position != fileINI.at(section).end()){
+            state = addParam(section, parameter+ "%%%%", " ;" +comment);
             cout<<"Aggiunta commento: "<<comment<<" alla sezione "<<"["<<section<<"]"<< "e parametro "<<parameter<<endl;
         }else{
             state = no_errors;
         }
-    }catch(out_of_range e){
-        std::cout<<"Tentativo di accedere ad elementi fuori range"<<std::endl;
+    }catch(out_of_range& e){
+        //std::cout<<"Tentativo di accedere ad elementi fuori range"<<std::endl;
         state = errors;
     }
     return state;
@@ -103,17 +96,14 @@ int INI::addComment(const string &section, const string &parameter, const string
 
 int INI::addComment(const string &section, const string &comment) {
     try {
-        fileINI[section];
-        string str(section);
-        str.pop_back();
-        auto position = fileINI[str+ "$"].insert(make_pair("", ";"+comment));
+        auto position = fileINI[section+ "%%%%"].insert(make_pair("%%%%", ";" +comment));
         cout<<"Aggiunta commento "<<comment<<" alla sezione "<<"["<<section<<"]"<<endl;
         if(position.second){
             state = no_errors;
         }else{
             state = exist;
         }
-    }catch(out_of_range e){
+    }catch(out_of_range& e){
         std::cout<<"Tentativo di accedere ad elementi fuori range"<<std::endl;
         state = errors;
     }
@@ -121,9 +111,9 @@ int INI::addComment(const string &section, const string &comment) {
 }
 
 int INI::deleteSection(const string &section) {
-    long int i = (long) fileINI.erase(section);
+    long int itr = (long) fileINI.erase(section);
     cout<<"Eliminata sezione "<<"["<<section<<"]"<<endl;
-    if(i > 0){
+    if(itr > 0){
         state = no_errors;
     }else{
         state = errors;
@@ -132,12 +122,15 @@ int INI::deleteSection(const string &section) {
 }
 
 int INI::deleteParam(const string &section, const string &parameter) {
-    auto itr = fileINI[section].find(parameter);
-    if(itr != fileINI[section].end()){
-        fileINI[section].erase(parameter);
-        cout<<"Eliminato parametro "<<parameter<<" alla sezione "<<"["<<section<<"]"<<endl;
-        state = no_errors;
-    }else{
+    try {
+        long int itr = (long) fileINI.at(section).erase(parameter);
+        if(itr > 0){
+            cout<<"Eliminato parametro "<<parameter<<" alla sezione "<<"["<<section<<"]"<<endl;
+            state = no_errors;
+        }else{
+            state = errors;
+        }
+    }catch(const out_of_range& e){
         state = errors;
     }
     return state;
@@ -158,9 +151,9 @@ int INI::renameSection(const string &section, const string &newSection) {
 
 int INI::renameParam(const string &section, const string &newParameter, const string &parameter) {
     try {
-        auto position = fileINI[section].find(parameter);
-        if(position != fileINI[section].end()){
-            auto itr = fileINI[section].insert(make_pair(newParameter, position->second));
+        auto position = fileINI.at(section).find(parameter);
+        if(position != fileINI.at(section).end()){
+            auto itr = fileINI.at(section).insert(make_pair(newParameter, position->second));
             if(itr.second){
                 fileINI[section].erase(position);
                 state = no_errors;
@@ -170,8 +163,8 @@ int INI::renameParam(const string &section, const string &newParameter, const st
         }else{
             state = errors;
         }
-        cout<<"Rinomino il parametro "<<parameter<<" nel nuovo parametro "<<newParameter<<"dell sezione"<<"["<<section<<"]"<<endl;
-    }catch(const out_of_range e){
+        cout<<"Rinomino il parametro "<<parameter<<" nel nuovo parametro "<<newParameter<<" della sezione "<<"["<<section<<"]"<<endl;
+    }catch(const out_of_range& e){
         state = errors;
     }
     return state;
@@ -179,53 +172,36 @@ int INI::renameParam(const string &section, const string &newParameter, const st
 
 int INI::changeParam(const string &section, const string &value, const string &parameter) {
     try {
-        auto position = fileINI[section].find(parameter);
-        if(position != fileINI[section].end()){
+        auto position = fileINI.at(section).find(parameter);
+        if(position != fileINI.at(section).end()){
             position-> second = value;
             state = no_errors;
         }else{
             state = errors;
         }
-    }catch(const out_of_range e){
+    }catch(const out_of_range& e){
         state = errors;
     }
     return state;
 }
 
-void INI::printSections() {
-    std::cout<<"Sezioni: "<<std::endl;
-    for(auto &itr:fileINI){
-        std::cout<<itr.first<<std::endl;
-    }
-}
-
-void INI::printParameters(const string &section) {
-    std::cout<<"Parametri della sezione "<<section<< " :"<<std::endl;
-    for (auto &itr:fileINI[section]) {
-        std::cout<<itr.first<<std::endl;
-    }
-}
-
-void INI::printValue(const string &section,const string &parameter) {
-    std::cout<<"valore del parametro: " <<parameter<<" ="<<fileINI[section][parameter]<<std::endl;
-}
-
-void INI::printAll() {
-    for (auto &itr:fileINI) {
-        if(itr.first != "$"){
-            std::cout<<"["<< itr.first<<"]"<<endl;  // Stampo nome della sezione
-        }
-        for (auto nextItr = itr.second.begin(); nextItr != itr.second.end(); nextItr++) {
-            if(nextItr->first == "$"){
-                std::cout<<nextItr->second<<endl;
-            }else{
-                if(nextItr->first != ""){
-                    std::cout<<nextItr->first<<"="<<nextItr->second<<endl;
-                }
+void INI::printModifications() {
+    for (auto &itr1 : fileINI) {
+        if(itr1.first.find("%%%%") == string::npos)
+            cout<<"["<< itr1.first<<"]"<<endl;  // Stampo nome della sezione
+        for(auto itr2 = itr1.second.begin() ; itr2 != itr1.second.end() ; itr2++)
+        {
+            if(itr2->first.find("%%%%") != string::npos)
+                cout<<itr2->second<<endl;
+            else {
+                if (itr2->first != "")
+                    cout << itr2->first << " = " << itr2->second << endl;
             }
         }
     }
 }
+
+
 
 
 

@@ -34,19 +34,14 @@ public:
     int renameParam(const string &section, const string &newParameter, const string &parameter);
     int changeParam(const string &section, const string &value, const string &parameter);
 
-    void printSections();
-    void printParameters(const string &section);
-    void printValue(const string &section, const string &parameter);
-    void printAll();
-
-    void reset();
+    void printModifications();
 
     virtual ~INI();
+
 private:
     string fileName;
     map<string, map<string,string>> fileINI;
     fstream project;
-    void analyze();
 };
 
 

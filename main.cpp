@@ -8,19 +8,20 @@ int main() {
     INI fileINI("ListinoCD.ini");
     cout<<"NOME FILE: "<< fileINI.getFileName()<<endl;
 
-    fileINI.addSection("BLUES"); //sezione [BLUES]
-    fileINI.addParam("BLUES", "ERIC CLAPTON", "5"); //Aggiungo CD alla nuova sezione
-    fileINI.addComment("BLUES","ERIC CLAPTON", " 'Soprannominato SlowHand e' tra i chitarristi blues piu' famosi e influenti...'");
-    fileINI.addComment("CLASSICAL","'Offerta CD genere CLASSICAL'");
+    fileINI.addSection("BLUES");
+    fileINI.addParam("BLUES", "ERIC CLAPTON", "5");
+    fileINI.addComment("BLUES","ERIC CLAPTON", "'Soprannominato SlowHand e' tra i chitarristi blues piu' famosi e influenti...'");
+    fileINI.addComment("CLASSICAL", "'Offerta CD genere CLASSICAL'");
 
+    fileINI.renameParam("BLUES", "ERIC CLAPTON 'SLOWHAND'", "ERIC CLAPTON");
     fileINI.renameSection("BLUES", "FOLK-BLUES");
     fileINI.changeParam("FOLK-BLUES", "33", "ERIC CLAPTON");
     fileINI.deleteSection("BLUES");
+    cout<<" "<<endl;
 
-    cout<<"******************STAMPA****************************"<<endl;
+    cout<<"******************STAMPA MODIFICHE FILE.ini****************************"<<endl;
 
-    //fileINI.printSections();
-    //fileINI.printParameters("JAZZ");
-    fileINI.printAll();
+    cout<<" "<<endl;
+    fileINI.printModifications();
     return 0;
 }
