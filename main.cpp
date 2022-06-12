@@ -5,7 +5,7 @@
 using namespace std;
 
 int main() {
-    INI fileINI("ListinoCD.ini");
+    INI fileINI("ListinoCD.ini", 1000);
     cout<<"NOME FILE: "<< fileINI.getFileName()<<endl;
 
     fileINI.addSection("BLUES");

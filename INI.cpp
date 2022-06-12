@@ -5,30 +5,29 @@
 #include <iostream>
 #include "INI.h"
 
-INI::INI(const string &fn){
+INI::INI(const string &fn, int nChar){
     fileName = fn;
     string section;
     string comment;
-    char lineChar[1000];
+    char lineChar[nChar];
     project.open(fileName, ios::in); //operazione di lettura da un flusso
     if(project.is_open()) {
         string stringa(lineChar);
-        for(auto position = stringa.find(" "); position!=string::npos ; position = stringa.find(" ")){
-            stringa.erase(position, 1); //elimino spazi vuoti (interpretati come fine stringa)
-        }
         while (!project.eof()) { //eof: end-of-file
             project.getline(lineChar, 1000);
             switch (lineChar[0]) {
                 case '[': {
                     section = lineChar;
+                    section.erase(section.begin());
                     addSection(section);
                     break;
                 }
                 case ';': {
                     comment = lineChar;
+                    comment.erase(comment.begin());
                     break;
                 }
-                default: { //non ho nè un commento nè una sezione -> leggo un paramentro
+                default: { //non ho nè un commento nè una sezione -> leggo un parametro
                     auto position = stringa.find('=');
                     string parametro(stringa, 0, position); //costruttore stringa da 0 a '='
                     string valore(stringa, position + 1, string::npos); //costruttore stringa da '=' a fine stinga

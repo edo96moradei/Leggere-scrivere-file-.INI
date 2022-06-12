@@ -13,7 +13,7 @@ using namespace std;
 
 class INI{
 public:
-    INI(const string &fileName);
+    INI(const string &fileName, int nChar);
 
     int errors = 0;
     int no_errors = 1;
