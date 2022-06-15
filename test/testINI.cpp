@@ -24,6 +24,12 @@ TEST(testINI, testSection){
     EXPECT_EQ(fileINI.addSection("POP"), fileINI.state = 2); //esiste già
     EXPECT_EQ(fileINI.addSection("ROCK"), fileINI.state = 2); //esiste già
 
+    //test getSection
+    string str1 = "ROCK";
+    EXPECT_EQ(fileINI.getSection(str1), fileINI.state = 1);
+    string str2 = "BLUES";
+    EXPECT_EQ(fileINI.getSection(str2), fileINI.state = 0);
+
     //test deleteSection
     EXPECT_EQ(fileINI.deleteSection("COUNTRY"), fileINI.state = 0);
     EXPECT_EQ(fileINI.deleteSection("ROCK"), fileINI.state = 1);
@@ -43,7 +49,9 @@ TEST(testINI, testParam){
     EXPECT_EQ(fileINI.addParam("POP", "MADONNA", "5"), fileINI.state = 1);
 
     //test getParam
-
+    string str = "5";
+    EXPECT_EQ(fileINI.getParam("ROCK", "ARTISTA_ROCK", str), fileINI.state = 0);
+    EXPECT_EQ(fileINI.getParam("ROCK", "GUNS'N'ROSES", str), fileINI.state = 1);
 
     //test deleteParam
     EXPECT_EQ(fileINI.deleteParam("ROCK", "QUEEN"), fileINI.state = 0);
@@ -73,6 +81,13 @@ TEST(testINI, testComment){
     EXPECT_EQ(fileINI.addComment("CLASSICAL", "LA MIGLIOR MUSICA CLASSICA"), fileINI.state = 2);
     EXPECT_EQ(fileINI.addComment("CLASSIC", "LA MIGLIOR MUSICA CLASSICA"), fileINI.state = 2);
 
-    //test getComment
+    //test getComment (relativo a parametro)
+    string str1 = "Novità CD";
+    EXPECT_EQ(fileINI.getComment("CLASSICAL", "BACH", str1), fileINI.state = 1);
+    EXPECT_EQ(fileINI.getComment("POP", "PINK FLOYD", str1), fileINI.state = 0);
 
+    //test getComment (relativo a sezione)
+    string str2 = "offerta CD ROCK";
+    EXPECT_EQ(fileINI.getComment("ROCK", str2), fileINI.state = 1);
+    EXPECT_EQ(fileINI.getComment("CLASSICAL", str2), fileINI.state = 0);
 }
