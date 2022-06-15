@@ -2,7 +2,6 @@
 // Created by admin on 21/02/2022.
 //
 
-
 #include <gtest/gtest.h>
 #include "../INI.h"
 
@@ -11,8 +10,14 @@
 //         int no_errors = 1;
 //         int exist = 2;
 
+TEST(fileINItest, testGetFileName){
+    INI fileINI("ListinoCD.ini", 1000);
+
+    ASSERT_EQ(fileINI.getFileName(),"ListinoCD.ini");
+}
+
 TEST(testINI, testSection){
-    INI fileINI("ListinoCD.ini");
+    INI fileINI("ListinoCD.ini", 1000);
 
     //test addSection
     EXPECT_EQ(fileINI.addSection("POP"), fileINI.state = 1);
@@ -29,12 +34,16 @@ TEST(testINI, testSection){
 }
 
 TEST(testINI, testParam){
-    INI fileINI("ListinoCD.ini");
+    INI fileINI("ListinoCD.ini", 1000);
 
     //test addParam
     EXPECT_EQ(fileINI.addParam("ROCK", "GUNS'N'ROSES", "5"), fileINI.state = 1);
     EXPECT_EQ(fileINI.addParam("ROCK", "GUNS'N'ROSES", "5"), fileINI.state = 2);
     EXPECT_EQ(fileINI.addParam("POP", "GUNS'N'ROSES", "5"), fileINI.state = 0);
+    EXPECT_EQ(fileINI.addParam("POP", "MADONNA", "5"), fileINI.state = 1);
+
+    //test getParam
+
 
     //test deleteParam
     EXPECT_EQ(fileINI.deleteParam("ROCK", "QUEEN"), fileINI.state = 0);
@@ -52,7 +61,7 @@ TEST(testINI, testParam){
 }
 
 TEST(testINI, testComment){
-    INI fileINI("ListinoCD.ini");
+    INI fileINI("ListinoCD.ini", 1000);
 
     //test addComment
     EXPECT_EQ(fileINI.addComment("ROCK", "PINK FLOYD", "Nuovo CD arrivato oggi"), fileINI.state = 1);
@@ -63,4 +72,7 @@ TEST(testINI, testComment){
     EXPECT_EQ(fileINI.addComment("CLASSICAL", "LA MIGLIOR MUSICA CLASSICA"), fileINI.state = 1);
     EXPECT_EQ(fileINI.addComment("CLASSICAL", "LA MIGLIOR MUSICA CLASSICA"), fileINI.state = 2);
     EXPECT_EQ(fileINI.addComment("CLASSIC", "LA MIGLIOR MUSICA CLASSICA"), fileINI.state = 2);
+
+    //test getComment
+
 }
