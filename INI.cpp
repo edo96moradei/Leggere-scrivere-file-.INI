@@ -209,40 +209,64 @@ int INI::getParam(const string &section, const string &parameter, string& value)
             state = errors;
         }
     }
-    catch(const out_of_range& err) {
+    catch(const out_of_range& e){
         state = errors;
     }
     return state;
 }
 
-int INI::getComment(const string &section, const string &parameter, string &comment) {
+int INI::getComment(const string &section, const string &parameter, string &comment) { //relativo a parametro
     try {
         string str;
-        if(parameter == ""){ //commento sezione
-            str = section;
-            str.pop_back();
-            auto position = fileINI.at(str+"%%%%").find("%%%%");
-            if(position != fileINI.at(str+"%%%%").end()) {
-                comment = position->second;
-                state = no_errors;
-            }else{
-                cout << "ERRORE!" << endl;
-                state = errors;
-            }
-        }else{ //commento parametro
-            str = parameter;
-            str.pop_back();
-            auto position = fileINI.at(section).find(str+"%%%%");
-            if(position != fileINI.at(section).end()) {
-                comment = position->second;
-                state = no_errors;
-            }else{
-                cout << "ERRORE!" << endl;
-                state = errors;
-            }
+        str = parameter;
+        str.pop_back();
+        auto position = fileINI.at(section).find(str+"%%%%");
+        if(position != fileINI.at(section).end()) {
+            comment = position->second;
+            state = no_errors;
+        }else{
+            cout << "ERRORE!" << endl;
+            state = errors;
         }
     }
-    catch(const out_of_range& err) {
+    catch(const out_of_range& e) {
+    }
+    return state;
+}
+
+int INI::getComment(const string& section, string& comment){ //relativo a sezione
+    try {
+        string str;
+        str = section;
+        str.pop_back();
+        auto position = fileINI.at(str+"%%%%").find("%%%%");
+        if(position != fileINI.at(str+"%%%%").end()) {
+            comment = position->second;
+            state = no_errors;
+        }else{
+            cout << "ERRORE!" << endl;
+            state = errors;
+        }
+    }catch(const out_of_range& e){
+
+    }
+    return state;
+}
+
+int INI::getSection(string& section){
+    try {
+        string str;
+        str = section;
+        auto position = fileINI.at(section).find(str);
+        if(position != fileINI.at(section).end()) {
+            section = position->first;
+            state = no_errors;
+        }else{
+            cout<<"ERRORE!"<<endl;
+            state = errors;
+        }
+    }catch(const out_of_range& e){
+
     }
     return state;
 }
