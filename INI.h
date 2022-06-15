@@ -21,6 +21,8 @@ public:
     int state;
 
     const string &getFileName() const;
+    int getParam(const string& section, const string& parameter, string& value);
+    int getComment(const string& section, const string& parameter = "", string& comment);
 
     int addSection(const string &section);
     int addParam(const string &section, const string &parameter, const string &value);
@@ -34,7 +36,7 @@ public:
     int renameParam(const string &section, const string &newParameter, const string &parameter);
     int changeParam(const string &section, const string &value, const string &parameter);
 
-    void printModifications();
+    void print();
 
     virtual ~INI();
 

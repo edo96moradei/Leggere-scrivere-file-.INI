@@ -70,7 +70,6 @@ int INI::addParam(const string &section, const string &parameter, const string &
             state = exist;
         }
     }catch(out_of_range& e){
-        //std::cout<<"Tentativo di accedere ad elementi fuori range"<<std::endl;
         state = errors;
     }
     return state;
@@ -81,13 +80,12 @@ int INI::addComment(const string &section, const string &parameter, const string
         state = errors;
         auto position = fileINI.at(section).find(parameter);
         if(position != fileINI.at(section).end()){
-            state = addParam(section, parameter+ "%%%%", " ;" +comment);
+            state = addParam(section, parameter+ "%%%%", ";" +comment);
             cout<<"Aggiunta commento: "<<comment<<" alla sezione "<<"["<<section<<"]"<< "e parametro "<<parameter<<endl;
         }else{
             state = no_errors;
         }
     }catch(out_of_range& e){
-        //std::cout<<"Tentativo di accedere ad elementi fuori range"<<std::endl;
         state = errors;
     }
     return state;
@@ -103,7 +101,6 @@ int INI::addComment(const string &section, const string &comment) {
             state = exist;
         }
     }catch(out_of_range& e){
-        std::cout<<"Tentativo di accedere ad elementi fuori range"<<std::endl;
         state = errors;
     }
     return state;
@@ -184,24 +181,71 @@ int INI::changeParam(const string &section, const string &value, const string &p
     return state;
 }
 
-void INI::printModifications() {
+void INI::print(){
     for (auto &itr1 : fileINI) {
-        if(itr1.first.find("%%%%") == string::npos)
-            cout<<"["<< itr1.first<<"]"<<endl;  // Stampo nome della sezione
-        for(auto itr2 = itr1.second.begin() ; itr2 != itr1.second.end() ; itr2++)
-        {
-            if(itr2->first.find("%%%%") != string::npos)
-                cout<<itr2->second<<endl;
-            else {
-                if (itr2->first != "")
-                    cout << itr2->first << " = " << itr2->second << endl;
+        if(itr1.first.find("%%%%") == string::npos) {
+            cout << "[" << itr1.first << "]" << endl; //stampa sezione (e suo eventuale relativo commento)
+        }
+        for(auto itr2 = itr1.second.begin() ; itr2 != itr1.second.end() ; itr2++) {
+            if(itr2->first.find("%%%%") != string::npos) {
+                cout<<itr2->second<<endl; //stampo commenti
+            }else{
+                if (itr2->first != "") {
+                    cout << itr2->first << " = " << itr2->second << endl; //stampa parametro e valore
+                }
             }
         }
     }
 }
 
+int INI::getParam(const string &section, const string &parameter, string& value) {
+    try {
+        auto position = fileINI.at(section).find(parameter);
+        if(position != fileINI.at(section).end()) {
+            value = position->second;
+            state = no_errors;
+        }else{
+            cout<<"ERRORE!"<<endl;
+            state = errors;
+        }
+    }
+    catch(const out_of_range& err) {
+        state = errors;
+    }
+    return state;
+}
 
-
+int INI::getComment(const string &section, const string &parameter, string &comment) {
+    try {
+        string str;
+        if(parameter == ""){ //commento sezione
+            str = section;
+            str.pop_back();
+            auto position = fileINI.at(str+"%%%%").find("%%%%");
+            if(position != fileINI.at(str+"%%%%").end()) {
+                comment = position->second;
+                state = no_errors;
+            }else{
+                cout << "ERRORE!" << endl;
+                state = errors;
+            }
+        }else{ //commento parametro
+            str = parameter;
+            str.pop_back();
+            auto position = fileINI.at(section).find(str+"%%%%");
+            if(position != fileINI.at(section).end()) {
+                comment = position->second;
+                state = no_errors;
+            }else{
+                cout << "ERRORE!" << endl;
+                state = errors;
+            }
+        }
+    }
+    catch(const out_of_range& err) {
+    }
+    return state;
+}
 
 
 

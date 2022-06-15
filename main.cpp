@@ -10,8 +10,8 @@ int main() {
 
     fileINI.addSection("BLUES");
     fileINI.addParam("BLUES", "ERIC CLAPTON", "5");
-    fileINI.addComment("BLUES","ERIC CLAPTON", "'Soprannominato SlowHand e' tra i chitarristi blues piu' famosi e influenti...'");
-    fileINI.addComment("CLASSICAL", "'Offerta CD genere CLASSICAL'");
+    fileINI.addComment("BLUES","ERIC CLAPTON", "Soprannominato SlowHand e' tra i chitarristi blues piu' famosi e influenti...");
+    fileINI.addComment("CLASSICAL", "Offerta CD genere CLASSICAL");
 
     fileINI.renameParam("BLUES", "ERIC CLAPTON 'SLOWHAND'", "ERIC CLAPTON");
     fileINI.renameSection("BLUES", "FOLK-BLUES");
@@ -22,6 +22,6 @@ int main() {
     cout<<"******************STAMPA MODIFICHE FILE.ini****************************"<<endl;
 
     cout<<" "<<endl;
-    fileINI.printModifications();
+    fileINI.print();
     return 0;
 }
