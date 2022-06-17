@@ -15,14 +15,16 @@ class INI{
 public:
     INI(const string &fileName, int nChar);
 
-    int errors = 0;
-    int no_errors = 1;
-    int exist = 2;
     int state;
+    int errors;
+    int no_errors;
+    int exist;
 
     const string &getFileName() const;
     int getParam(const string& section, const string& parameter, string& value);
-    int getComment(const string& section, const string& parameter = "", string& comment);
+    int getComment(const string& section, const string& parameter, string& comment);
+    int getComment(const string& section, string& comment);
+    int getSection(string& section);
 
     int addSection(const string &section);
     int addParam(const string &section, const string &parameter, const string &value);
