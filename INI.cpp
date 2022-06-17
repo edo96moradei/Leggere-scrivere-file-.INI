@@ -52,7 +52,6 @@ int INI::addSection(const string &section) {
     auto itr = fileINI.find(section); //l'iteratore va all'elemento section
     if(itr == fileINI.end()) {
         fileINI[section].insert(make_pair("", ""));
-        cout<<"Aggiunta sezione ["<<section<<"]"<<endl;
         state = no_errors;
     }else{
         state = exist;
@@ -63,7 +62,6 @@ int INI::addSection(const string &section) {
 int INI::addParam(const string &section, const string &parameter, const string &value) {
     try {
         auto itr = fileINI.at(section).insert(make_pair(parameter, value)); //accedo alla sezione e inserisco la coppia ( , )
-        cout<<"Alla sezione "<<"["<<section<<"]"<<" aggiunto ("<<parameter<<","<<value<<")"<<endl;
         if(itr.second){
             state = no_errors;
         }else{
@@ -77,11 +75,9 @@ int INI::addParam(const string &section, const string &parameter, const string &
 
 int INI::addComment(const string &section, const string &parameter, const string &comment) {
     try {
-        state = errors;
         auto position = fileINI.at(section).find(parameter);
         if(position != fileINI.at(section).end()){
             state = addParam(section, parameter+ "%%%%", ";" +comment);
-            cout<<"Aggiunta commento: "<<comment<<" alla sezione "<<"["<<section<<"]"<< "e parametro "<<parameter<<endl;
         }else{
             state = no_errors;
         }
@@ -93,8 +89,7 @@ int INI::addComment(const string &section, const string &parameter, const string
 
 int INI::addComment(const string &section, const string &comment) {
     try {
-        auto position = fileINI[section+ "%%%%"].insert(make_pair("%%%%", ";" +comment));
-        cout<<"Aggiunta commento "<<comment<<" alla sezione "<<"["<<section<<"]"<<endl;
+        auto position = fileINI[section].insert(make_pair("%%%%", ";" +comment));
         if(position.second){
             state = no_errors;
         }else{
@@ -108,7 +103,6 @@ int INI::addComment(const string &section, const string &comment) {
 
 int INI::deleteSection(const string &section) {
     long int itr = (long) fileINI.erase(section);
-    cout<<"Eliminata sezione "<<"["<<section<<"]"<<endl;
     if(itr > 0){
         state = no_errors;
     }else{
@@ -121,7 +115,6 @@ int INI::deleteParam(const string &section, const string &parameter) {
     try {
         long int itr = (long) fileINI.at(section).erase(parameter);
         if(itr > 0){
-            cout<<"Eliminato parametro "<<parameter<<" alla sezione "<<"["<<section<<"]"<<endl;
             state = no_errors;
         }else{
             state = errors;
@@ -137,7 +130,6 @@ int INI::renameSection(const string &section, const string &newSection) {
     if(position != fileINI.end()){
         fileINI.insert(make_pair(newSection, position->second));
         fileINI.erase(position);
-        cout<<"Rinomino la sezione "<<"["<<section<<"]"<<" nella nuova sezione "<<"["<<newSection<<"]"<<endl;
         state = no_errors;
     }else{
         state = errors;
@@ -159,7 +151,6 @@ int INI::renameParam(const string &section, const string &newParameter, const st
         }else{
             state = errors;
         }
-        cout<<"Rinomino il parametro "<<parameter<<" nel nuovo parametro "<<newParameter<<" della sezione "<<"["<<section<<"]"<<endl;
     }catch(const out_of_range& e){
         state = errors;
     }
@@ -205,7 +196,6 @@ int INI::getParam(const string &section, const string &parameter, string& value)
             value = position->second;
             state = no_errors;
         }else{
-            cout<<"ERRORE!"<<endl;
             state = errors;
         }
     }
@@ -215,7 +205,7 @@ int INI::getParam(const string &section, const string &parameter, string& value)
     return state;
 }
 
-int INI::getComment(const string &section, const string &parameter, string &comment) { //relativo a parametro
+int INI::getComment(const string &section, const string &parameter, string &comment)  { //relativo a parametro
     try {
         string str;
         str = parameter;
@@ -225,7 +215,6 @@ int INI::getComment(const string &section, const string &parameter, string &comm
             comment = position->second;
             state = no_errors;
         }else{
-            cout << "ERRORE!" << endl;
             state = errors;
         }
     }
@@ -234,7 +223,7 @@ int INI::getComment(const string &section, const string &parameter, string &comm
     return state;
 }
 
-int INI::getComment(const string& section, string& comment){ //relativo a sezione
+int INI::getComment(const string& section, string& comment) { //relativo a sezione
     try {
         string str;
         str = section;
@@ -244,7 +233,6 @@ int INI::getComment(const string& section, string& comment){ //relativo a sezion
             comment = position->second;
             state = no_errors;
         }else{
-            cout << "ERRORE!" << endl;
             state = errors;
         }
     }catch(const out_of_range& e){
@@ -253,7 +241,7 @@ int INI::getComment(const string& section, string& comment){ //relativo a sezion
     return state;
 }
 
-int INI::getSection(string& section){
+int INI::getSection(string& section) {
     try {
         string str;
         str = section;
@@ -262,7 +250,6 @@ int INI::getSection(string& section){
             section = position->first;
             state = no_errors;
         }else{
-            cout<<"ERRORE!"<<endl;
             state = errors;
         }
     }catch(const out_of_range& e){
